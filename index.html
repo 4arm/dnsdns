@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DNSMasq Dashboard</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #eee; }
+    tr:hover { background: #f1f1f1; }
+  </style>
+</head>
+<body>
+  <h1>📊 DNSMasq Log Dashboard</h1>
+  <table id="dnsTable">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Client IP</th>
+        <th>Port</th>
+        <th>Action</th>
+        <th>Domain</th>
+        <th>Details</th>
+	<th>🧠 Info</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadLogs() {
+      const res = await fetch('dns.php');
+      const data = await res.json();
+      const table = document.querySelector('#dnsTable tbody');
+      table.innerHTML = '';
+
+data.forEach(entry => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${entry.time || '-'}</td>
+    <td>${entry.client_ip || '-'}</td>
+    <td>${entry.port || '-'}</td>
+    <td>${entry.action || '-'}</td>
+    <td>${entry.domain || '-'}</td>
+    <td>${entry.forwarded_to || entry.reply || '-'}</td>
+    <td>${entry.info}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+    // Refresh every 5 seconds
+    loadLogs();
+    setInterval(loadLogs, 5000);
+  </script>
+</body>
+</html>
